@@ -12,8 +12,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+        az-version: [15.6.0, 15.5.0, 15.0.0]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    name: ${{ matrix.os }} / pwsh / Az ${{ matrix.az-version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,14 +48,15 @@ jobs:
 
           function Install-ModuleWithRetry {
             param(
-              [Parameter(Mandatory = $true)][string]$Name
+              [Parameter(Mandatory = $true)][string]$Name,
+              [Parameter(Mandatory = $true)][string]$RequiredVersion
             )
 
             $maxAttempts = 3
             for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
               try {
-                Write-Host "Installing module '$Name' (attempt $attempt/$maxAttempts)..."
-                Install-Module -Name $Name -Repository PSGallery -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
+                Write-Host "Installing module '$Name' version '$RequiredVersion' (attempt $attempt/$maxAttempts)..."
+                Install-Module -Name $Name -RequiredVersion $RequiredVersion -Repository PSGallery -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
                 Write-Host "Install succeeded for '$Name'."
                 return
               }
@@ -67,8 +70,8 @@ jobs:
             }
           }
 
-          Write-Host "Installing latest Az PowerShell module..."
-          Install-ModuleWithRetry -Name Az
+          Write-Host "Installing Az PowerShell module version: ${{ matrix.az-version }}"
+          Install-ModuleWithRetry -Name Az -RequiredVersion '${{ matrix.az-version }}'
 
       - name: Validate Az.DataProtection source parseability
         id: parse_pwsh
@@ -300,8 +303,13 @@ jobs:
           Write-Host 'pwsh job passed. All steps completed successfully.'
 
   test-az-dataprotection-windows-powershell:
+    strategy:
+      fail-fast: false
+      matrix:
+        az-version: [15.6.0, 15.5.0, 15.0.0]
     runs-on: windows-latest
     timeout-minutes: 30
+    name: windows-latest / powershell / Az ${{ matrix.az-version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -331,14 +339,15 @@ jobs:
 
           function Install-ModuleWithRetry {
             param(
-              [Parameter(Mandatory = $true)][string]$Name
+              [Parameter(Mandatory = $true)][string]$Name,
+              [Parameter(Mandatory = $true)][string]$RequiredVersion
             )
 
             $maxAttempts = 3
             for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
               try {
-                Write-Host "Installing module '$Name' (attempt $attempt/$maxAttempts)..."
-                Install-Module -Name $Name -Repository PSGallery -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
+                Write-Host "Installing module '$Name' version '$RequiredVersion' (attempt $attempt/$maxAttempts)..."
+                Install-Module -Name $Name -RequiredVersion $RequiredVersion -Repository PSGallery -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
                 Write-Host "Install succeeded for '$Name'."
                 return
               }
@@ -352,8 +361,8 @@ jobs:
             }
           }
 
-          Write-Host "Installing latest Az PowerShell module..."
-          Install-ModuleWithRetry -Name Az
+          Write-Host "Installing Az PowerShell module version: ${{ matrix.az-version }}"
+          Install-ModuleWithRetry -Name Az -RequiredVersion '${{ matrix.az-version }}'
 
       - name: Validate Az.DataProtection source parseability
         id: parse_powershell
