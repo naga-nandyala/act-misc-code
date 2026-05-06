@@ -11,8 +11,9 @@ name: Az.DataProtection Module Test v2
 #   windows-latest / pwsh           x Az 15.6.0, 15.5.0, 15.0.0
 #   windows-latest / powershell-5.1 x Az 15.6.0, 15.5.0, 15.0.0
 #
-# Flow: install pinned Az version -> diagnose (parse + unicode) -> import -> validate
-# Import + validate only run if diagnosis passes.
+# Flow: install pinned Az version -> diagnose (parse + unicode, informational) -> import -> validate
+# Diagnosis is informational (continue-on-error). Import + validate ALWAYS run
+# so we can see which shell/version combos actually break on import.
 
 jobs:
   # =================================================================
@@ -95,9 +96,10 @@ jobs:
           Write-Host "Az.Accounts      : $($azAcct.Version)"
           Write-Host "Module path      : $($azDP.ModuleBase)"
 
-      # ---- DIAGNOSIS: runs BEFORE any import ----
+      # ---- DIAGNOSIS: informational, does NOT block import ----
       - name: Diagnose - parse all Az.DataProtection source files
         id: parse_check
+        continue-on-error: true
         shell: pwsh
         run: |
           Set-StrictMode -Version Latest
@@ -141,6 +143,7 @@ jobs:
 
       - name: Diagnose - scan for Unicode corruption
         id: unicode_check
+        continue-on-error: true
         shell: pwsh
         run: |
           Set-StrictMode -Version Latest
@@ -188,9 +191,8 @@ jobs:
 
           Write-Host "No Unicode corruption found."
 
-      # ---- IMPORT + VALIDATE: only if diagnosis passed ----
+      # ---- IMPORT + VALIDATE: always run to see what actually breaks ----
       - name: Import Az rollup (customer regression gate)
-        if: steps.parse_check.outcome == 'success' && steps.unicode_check.outcome == 'success'
         shell: pwsh
         run: |
           Set-StrictMode -Version Latest
@@ -218,7 +220,6 @@ jobs:
           Write-Host 'Import-Module Az succeeded without errors.'
 
       - name: Validate Az.DataProtection commands
-        if: steps.parse_check.outcome == 'success' && steps.unicode_check.outcome == 'success'
         shell: pwsh
         run: |
           Set-StrictMode -Version Latest
@@ -341,9 +342,10 @@ jobs:
           Write-Host "Az.Accounts      : $($azAcct.Version)"
           Write-Host "Module path      : $($azDP.ModuleBase)"
 
-      # ---- DIAGNOSIS: runs BEFORE any import ----
+      # ---- DIAGNOSIS: informational, does NOT block import ----
       - name: Diagnose - parse all Az.DataProtection source files
         id: parse_check
+        continue-on-error: true
         shell: powershell
         run: |
           Set-StrictMode -Version Latest
@@ -387,6 +389,7 @@ jobs:
 
       - name: Diagnose - scan for Unicode corruption
         id: unicode_check
+        continue-on-error: true
         shell: powershell
         run: |
           Set-StrictMode -Version Latest
@@ -434,9 +437,8 @@ jobs:
 
           Write-Host "No Unicode corruption found."
 
-      # ---- IMPORT + VALIDATE: only if diagnosis passed ----
+      # ---- IMPORT + VALIDATE: always run to see what actually breaks ----
       - name: Import Az rollup (customer regression gate)
-        if: steps.parse_check.outcome == 'success' && steps.unicode_check.outcome == 'success'
         shell: powershell
         run: |
           Set-StrictMode -Version Latest
@@ -464,7 +466,6 @@ jobs:
           Write-Host 'Import-Module Az succeeded without errors.'
 
       - name: Validate Az.DataProtection commands
-        if: steps.parse_check.outcome == 'success' && steps.unicode_check.outcome == 'success'
         shell: powershell
         run: |
           Set-StrictMode -Version Latest
