@@ -171,6 +171,9 @@ jobs:
             Sort-Object Version -Descending |
             Select-Object -First 1
 
+          $azRollupVersion = if ($azRollup -and $azRollup.PSObject.Properties['Version']) { $azRollup.Version.ToString() } else { 'n/a' }
+          $azAccountsVersion = if ($azAccounts -and $azAccounts.PSObject.Properties['Version']) { $azAccounts.Version.ToString() } else { 'n/a' }
+
           $module = Get-Module -Name Az.DataProtection -ListAvailable |
             Sort-Object Version -Descending |
             Select-Object -First 1
@@ -180,8 +183,8 @@ jobs:
           }
 
           Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
-          Write-Host "Az rollup version: $($azRollup.Version)"
-          Write-Host "Az.Accounts version: $($azAccounts.Version)"
+          Write-Host "Az rollup version: $azRollupVersion"
+          Write-Host "Az.Accounts version: $azAccountsVersion"
           Write-Host "Az.DataProtection version: $($module.Version)"
           Write-Host "Az.DataProtection module path: $($module.ModuleBase)"
 
@@ -457,6 +460,9 @@ jobs:
             Sort-Object Version -Descending |
             Select-Object -First 1
 
+          $azRollupVersion = if ($azRollup -and $azRollup.PSObject.Properties['Version']) { $azRollup.Version.ToString() } else { 'n/a' }
+          $azAccountsVersion = if ($azAccounts -and $azAccounts.PSObject.Properties['Version']) { $azAccounts.Version.ToString() } else { 'n/a' }
+
           $module = Get-Module -Name Az.DataProtection -ListAvailable |
             Sort-Object Version -Descending |
             Select-Object -First 1
@@ -466,8 +472,8 @@ jobs:
           }
 
           Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
-          Write-Host "Az rollup version: $($azRollup.Version)"
-          Write-Host "Az.Accounts version: $($azAccounts.Version)"
+          Write-Host "Az rollup version: $azRollupVersion"
+          Write-Host "Az.Accounts version: $azAccountsVersion"
           Write-Host "Az.DataProtection version: $($module.Version)"
           Write-Host "Az.DataProtection module path: $($module.ModuleBase)"
 
