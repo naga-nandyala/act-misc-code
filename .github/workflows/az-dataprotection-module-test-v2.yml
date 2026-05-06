@@ -91,10 +91,15 @@ jobs:
           $azDP = Get-Module -Name Az.DataProtection -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
           $azAcct = Get-Module -Name Az.Accounts -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
 
-          Write-Host "Az rollup        : $($azRollup.Version)"
-          Write-Host "Az.DataProtection: $($azDP.Version)"
-          Write-Host "Az.Accounts      : $($azAcct.Version)"
-          Write-Host "Module path      : $($azDP.ModuleBase)"
+          $azRollupVer = if ($azRollup -and $azRollup.PSObject.Properties['Version']) { $azRollup.Version.ToString() } else { 'NOT FOUND' }
+          $azDPVer     = if ($azDP -and $azDP.PSObject.Properties['Version']) { $azDP.Version.ToString() } else { 'NOT FOUND' }
+          $azAcctVer   = if ($azAcct -and $azAcct.PSObject.Properties['Version']) { $azAcct.Version.ToString() } else { 'NOT FOUND' }
+          $azDPPath    = if ($azDP -and $azDP.PSObject.Properties['ModuleBase']) { $azDP.ModuleBase } else { 'N/A' }
+
+          Write-Host "Az rollup        : $azRollupVer"
+          Write-Host "Az.DataProtection: $azDPVer"
+          Write-Host "Az.Accounts      : $azAcctVer"
+          Write-Host "Module path      : $azDPPath"
 
       # ---- DIAGNOSIS: informational, does NOT block import ----
       - name: Diagnose - parse all Az.DataProtection source files
@@ -337,10 +342,15 @@ jobs:
           $azDP = Get-Module -Name Az.DataProtection -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
           $azAcct = Get-Module -Name Az.Accounts -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
 
-          Write-Host "Az rollup        : $($azRollup.Version)"
-          Write-Host "Az.DataProtection: $($azDP.Version)"
-          Write-Host "Az.Accounts      : $($azAcct.Version)"
-          Write-Host "Module path      : $($azDP.ModuleBase)"
+          $azRollupVer = if ($azRollup -and $azRollup.PSObject.Properties['Version']) { $azRollup.Version.ToString() } else { 'NOT FOUND' }
+          $azDPVer     = if ($azDP -and $azDP.PSObject.Properties['Version']) { $azDP.Version.ToString() } else { 'NOT FOUND' }
+          $azAcctVer   = if ($azAcct -and $azAcct.PSObject.Properties['Version']) { $azAcct.Version.ToString() } else { 'NOT FOUND' }
+          $azDPPath    = if ($azDP -and $azDP.PSObject.Properties['ModuleBase']) { $azDP.ModuleBase } else { 'N/A' }
+
+          Write-Host "Az rollup        : $azRollupVer"
+          Write-Host "Az.DataProtection: $azDPVer"
+          Write-Host "Az.Accounts      : $azAcctVer"
+          Write-Host "Module path      : $azDPPath"
 
       # ---- DIAGNOSIS: informational, does NOT block import ----
       - name: Diagnose - parse all Az.DataProtection source files
